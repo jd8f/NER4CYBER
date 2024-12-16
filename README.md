@@ -104,17 +104,18 @@ python postprocess.py --input_file predictions.jsonlines \
 ## Repository Structure
 ```
 .
-├── data/                    # Directory for raw datasets.
-├── processed_data/          # Directory for preprocessed datasets.
-├── model_output/            # Directory for trained model outputs.
-├── scripts/                 # Directory containing utility scripts.
-│   ├── preprocess.py        # Script for data preprocessing.
-│   ├── train.py             # Script for model training.
-│   ├── evaluate.py          # Script for model evaluation.
-│   ├── predict.py           # Script for generating predictions.
-│   ├── postprocess.py       # Script for postprocessing predictions.
-├── requirements.txt         # List of dependencies.
-├── README.md                # Project documentation.
+├── corrected_predictions_output/             # Directory for corrected predictions output files.
+├── data/                                     # Directory for raw datasets.
+├── model/                                    # Directory for trained model outputs.
+├── predictions_output/                       # Directory for predictions output files.
+├── scripts/                                  # Directory containing utility scripts.
+│   ├── DataProcessing.py                     # Script for data preprocessing.
+│   ├── Model.py                              # Script for model training.
+│   ├── NERDataset.py                         # Script for dataset evaluation.
+│   ├── PostProcessing.py                     # Script for postprocessing correction.
+│   ├── Prediction.py                         # Script for predictions.
+│   ├── ValidationStructureConsistency.py     # Script for predictions validations.
+├── README.md                                 # Project documentation.
 ```
 
 ---
@@ -127,11 +128,5 @@ python postprocess.py --input_file predictions.jsonlines \
 
 ---
 
-## License
-This project is licensed under the MIT License. See the `LICENSE` file for details.
 
----
-
-## Contact
-For questions, suggestions, or issues, please open an issue in this repository or contact <your-email@example.com>.
 
