@@ -17,29 +17,13 @@ This repository contains a Named Entity Recognition (NER) project designed for i
 ### Prerequisites
 1. Python 3.8 or later.
 2. Git installed on your system.
-3. A virtual environment manager (e.g., `venv` or `conda`).
 
 ### Installation
-1. Clone the repository:
+Clone the repository:
    ```bash
    git clone https://github.com/<your-username>/ner-cybersecurity.git
    cd ner-cybersecurity
    ```
-2. Set up a virtual environment:
-   ```bash
-   python3 -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-3. Install required dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. Download the pretrained BERT model:
-   This project uses the `bert-base-uncased` model from Hugging Face. Ensure it is downloaded and configured for use:
-   ```bash
-   python -c "from transformers import AutoModel; AutoModel.from_pretrained('bert-base-uncased')"
-   ```
-
 ---
 
 ## Dataset Preparation
