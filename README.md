@@ -48,40 +48,21 @@ The JSON Lines format should follow this structure:
 
 ### 1. Preprocessing Data
 Before training, preprocess the data for tokenization and alignment:
-```bash
-python preprocess.py --data_dir data --output_dir processed_data
-```
+Ensure the file paths (training, validation and testing) are correct and run `DataProcessing.py`.
 
 ### 2. Training the Model
 Train the NER model using the prepared dataset:
-```bash
-python train.py --train_file processed_data/NER-TRAINING.jsonlines \
-                --val_file processed_data/NER-VALIDATION.jsonlines \
-                --output_dir model_output \
-                --epochs 3 --batch_size 16 --learning_rate 1e-5
-```
+Ensure the new model path is correct and run `Model.py`.
 
-### 3. Evaluating the Model
-Evaluate the trained model on the validation dataset:
-```bash
-python evaluate.py --model_dir model_output \
-                   --val_file processed_data/NER-VALIDATION.jsonlines
-```
-
-### 4. Generating Predictions on Test Data
+### 3. Generating Predictions on Test Data
 Run the model on the test dataset and save predictions to a JSON Lines file:
-```bash
-python predict.py --model_dir model_output \
-                  --test_file data/NER-TESTING.jsonlines \
-                  --output_file predictions.jsonlines
-```
+Ensure the new or old model and output file paths are correct and run `Prediction.py`.
 
-### 5. Postprocessing and Validation
+### 4. Postprocessing and Validation
 Validate and correct the predictions:
-```bash
-python postprocess.py --input_file predictions.jsonlines \
-                      --output_file corrected_predictions.jsonlines
-```
+First, ensure the input file (output prediction) path and run `ValidationStructureConsistency.py` to verify the structure and consistency before postprocessing.
+Then, ensure the input (output prediction) and output (corrected output prediction) paths are correct and run `PostProcessing.py`.
+Finally, rerun `ValidationStructureConsistency.py` and observe if there's any remaining issue.
 
 ---
 
