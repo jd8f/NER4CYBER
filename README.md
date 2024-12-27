@@ -21,7 +21,7 @@ This repository contains a Named Entity Recognition (NER) project designed to id
 ### Installation
 Clone the repository:
    ```bash
-   git clone https://github.com/<your-username>/ner-cybersecurity.git
+   git clone https://github.com/jd8f/NER4CYBER.git
    cd ner-cybersecurity
    ```
 
