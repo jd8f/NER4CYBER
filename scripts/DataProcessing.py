@@ -215,10 +215,3 @@ if __name__ == "__main__":
             print(f"Tag: {tag}\t| Overweight: {weight:.4f}")
         else:
             print(f"Tag: {tag}\t| Weight: {weight:.4f}")"""
-        
-    
-
-
-
-
-
