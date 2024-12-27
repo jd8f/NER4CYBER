@@ -89,7 +89,7 @@ Ensure the structure and consistency of the predictions before using them:
    python scripts/PostProcessing.py
    ```
 
-- After postprocessing, rerun the validation to confirm correctness:
+- After postprocessing, rerun the validation to confirm correctness (for corrected output predictions):
    ```bash
    python scripts/ValidationStructureConsistency.py
    ```
