@@ -16,7 +16,6 @@ import torch.nn as nn
 import numpy as np
 from transformers import AutoTokenizer, AutoModelForTokenClassification
 from torch.utils.data import DataLoader
-from sklearn.metrics import classification_report
 from NERDataset import *
 from DataProcessing import *
 
@@ -82,8 +81,6 @@ def validate_model(model, val_loader):
     total_loss = 0
     correct_preds = 0
     total_preds = 0
-    #all_labels = []
-    #all_preds = []
     
     with torch.no_grad(): # Disable gradient computation for validation
         for batch in val_loader:
@@ -104,15 +101,8 @@ def validate_model(model, val_loader):
             correct_preds += (preds[mask] == labels[mask]).sum().item()
             total_preds += mask.sum().item()
             
-            # Retrieve predictions and ignore padding tokens
-            #preds = torch.argmax(outputs.logits, dim=-1)
-            #mask = (labels != tokenizer.pad_token_id)  # Mask to ignore padding tokens
-            #all_labels.extend(labels[mask].cpu().numpy())
-            #all_preds.extend(preds[mask].cpu().numpy())
-            
     accuracy = correct_preds / total_preds
     print(f"Validation Accuracy: {accuracy * 100:.2f}%\nValidation Loss: {total_loss / len(val_loader)}")
-    #print(classification_report(all_labels, all_preds, target_names=list(train_tag_to_idx.keys())))
     model.train() # Switch back to training mode
 #-----------------------------------------------------------------------
   
@@ -124,6 +114,7 @@ if __name__ == "__main__":
     # Convert class weights into an ordered list (aligned with tag_to_idx)
     weights_list = [train_class_weights[tag] for tag, idx in train_tag_to_idx.items()]
     weights_tensor = torch.tensor(weights_list, dtype=torch.float)
+    weights_tensor = weights_tensor * 1.0 # Increase the weight impact
 
     #print("\nMapping des tags vers indices :", train_tag_to_idx)
     #print("Poids des classes :", weights_tensor)
@@ -152,6 +143,8 @@ if __name__ == "__main__":
 
     # Define the optimizer
     optimizer = torch.optim.AdamW(model.parameters(), lr=5e-5)
+    # Define the optimizer with weight decay
+    #optimizer = torch.optim.AdamW(model.parameters(), lr=5e-5, weight_decay=0.01)
 
     # Move the model to GPU
     model = model.to(device)

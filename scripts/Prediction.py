@@ -120,7 +120,7 @@ def main():
     model = AutoModelForTokenClassification.from_pretrained(model_name, num_labels=len(train_tag_to_idx))
 
     # Load trained model weights
-    model.load_state_dict(torch.load("model/new_trained_ner_model.pth", weights_only=True))
+    model.load_state_dict(torch.load("model/new_trained_ner_model_1.pth", weights_only=True))
     model = model.to(device)
 
     # Create idx_to_tag mapping

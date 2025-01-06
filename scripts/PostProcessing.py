@@ -25,7 +25,7 @@ def resolve_token_tags(file_path, output_path):
     valid_token_tags = {}  # To store the resolved valid tag for each token
 
     # First pass: Collect all tags for each token
-    with open(file_path, 'r') as file:
+    with open(file_path, 'r', encoding='utf-8') as file:  # Ensure UTF-8 encoding
         for line in file:
             data = json.loads(line)
             tokens = data.get("tokens", [])
@@ -53,7 +53,7 @@ def resolve_token_tags(file_path, output_path):
             valid_token_tags[token] = tags[0]
 
     # Third pass: Replace the NER tags in the dataset with the resolved valid ones
-    with open(file_path, 'r') as file, open(output_path, 'w') as output_file:
+    with open(file_path, 'r', encoding='utf-8') as file, open(output_path, 'w', encoding='utf-8') as output_file:
         for line in file:
             data = json.loads(line)
             tokens = data.get("tokens", [])
@@ -64,7 +64,7 @@ def resolve_token_tags(file_path, output_path):
 
             # Update the data with the new ner_tags and write it to the output file
             data['ner_tags'] = new_ner_tags
-            json.dump(data, output_file)
+            json.dump(data, output_file, ensure_ascii=False)  # Write with non-ASCII characters preserved
             output_file.write('\n')  # Write each JSON object on a new line
 
     print("Token tags have been resolved and replaced.")
@@ -112,7 +112,7 @@ def ensure_b_precedes_i(input_file, output_file):
         int: Number of modifications made.
     """
     modifications = 0
-    with open(input_file, 'r') as f_in, open(output_file, 'w') as f_out:
+    with open(input_file, 'r', encoding='utf-8') as f_in, open(output_file, 'w', encoding='utf-8') as f_out:
         for line_num, line in enumerate(f_in, start=1): 
             data = json.loads(line.strip())
             tokens = data['tokens']
@@ -134,7 +134,9 @@ def ensure_b_precedes_i(input_file, output_file):
                 print(f"After : {ner_tags}\n")
 
             data['ner_tags'] = ner_tags
-            f_out.write(json.dumps(data) + '\n')
+            # Write the data with proper encoding, ensuring special Unicode characters are preserved
+            json.dump(data, f_out, ensure_ascii=False)  # This prevents escaping characters like `•` into unicode
+            f_out.write('\n')  # Write each JSON object on a new line
     
     return modifications
 #-----------------------------------------------------------------------
@@ -142,6 +144,7 @@ def ensure_b_precedes_i(input_file, output_file):
 def process_ner_tags(input_file, output_file):
     """
     Replaces consecutive `B-` tags of the same entity with `I-`, except for the first occurrence.
+    Also replaces special characters like bullets and arrows with their Unicode escape sequences.
 
     Args:
         input_file (str): Path to the input JSON lines file.
@@ -151,12 +154,32 @@ def process_ner_tags(input_file, output_file):
         int: Number of modifications made.
     """
     modifications = 0
-    with open(input_file, 'r') as f_in, open(output_file, 'w') as f_out:
+    """special_char_map = {
+        '•': "\u2022",     # Bullet point
+        '➔': '\\u2794',     # Rightwards arrow
+        '↓': '\\u2193',     # Downwards arrow
+        '–': '\\u2013',     # En Dash
+        '«': '\\u00AB',     # Left-pointing double angle quotation mark
+        '»': '\\u00BB',     # Right-pointing double angle quotation mark
+        '⁰': '\\u2070',     # Superscript zero (if needed)
+        '\uf0b7': '\\uF0B7', # Bullet character (Unicode variant)
+        '§': '\\u00A7',     # Section symbol
+        '\xad': '\\u00AD',   # Soft hyphen
+        '少江': '\\u5C1A\\u6C5F',  # Chinese characters (example)
+        '慧中': '\\u6085\\u4E2D',  # Chinese characters (example)
+        '大学时代': '\\u5927\\u5B66\\u65F6\\u4EE3',  # Chinese characters (example)
+        'Trojan\xadDownloader': '\\u0054\\u0072\\u006F\\u006A\\u0061\\u006E\\u00AD\\u0044\\u006F\\u0077\\u006E\\u006C0065\\u0072',  # Unicode of Trojan with soft hyphen included
+        'User\xadAgent': '\\u0055\\u0073\\u0065\\u0072\\u00AD\\u0041\\u0067\\u0065\\u006E\\u0074',
+        # Add more as needed...
+    }"""
+
+    with open(input_file, 'r', encoding='utf-8') as f_in, open(output_file, 'w', encoding='utf-8') as f_out:
         for line_num, line in enumerate(f_in, start=1):  
             data = json.loads(line)
             ner_tags = data["ner_tags"]  
             original_tags = ner_tags.copy()  # Save original state for comparison
-            
+
+            # Replace consecutive `B-` tags of the same entity with `I-`, except for the first occurrence
             for i in range(1, len(ner_tags)): 
                 current_tag = ner_tags[i]
                 previous_tag = ner_tags[i - 1]
@@ -168,15 +191,30 @@ def process_ner_tags(input_file, output_file):
                         ner_tags[i] = current_tag.replace('B-', 'I-')
                         modifications += 1 
             
+            # Replace special characters in tokens
+            tokens = data["tokens"]
+            for i in range(len(tokens)):
+                token = tokens[i]
+                # Replace special characters using the map
+                """for char, escape in special_char_map.items():
+                    token = token.replace(char, escape)"""
+                tokens[i] = token  # Update token with the replaced special characters
+
             if original_tags != ner_tags:  
                 print(f"Line {line_num}: Modifications detected")
                 print(f"Before : {original_tags}")
                 print(f"After : {ner_tags}\n")
             
+            # Update the data with the new tokens and ner_tags
+            data["tokens"] = tokens
             data["ner_tags"] = ner_tags
-            f_out.write(json.dumps(data) + '\n')
+            
+            # Write the data with proper encoding, ensuring special Unicode characters are preserved
+            json.dump(data, f_out, ensure_ascii=True)
+            f_out.write('\n')  # Write each JSON object on a new line
     
     return modifications
+
 #-----------------------------------------------------------------------
 
 #=======================================================================
@@ -191,12 +229,12 @@ final_output_file = "corrected_predictions_output/corrected_predictions_output_1
 # Apply all the functions sequentially
 # As we don't know how correct the NER tags (in our case, we based it on frequency), it might give worse results.
 # So if wanted, you can turn into comments the 2 lines below and directly use the input file too apply NER rules corrections.
-resolve_token_tags(input_file, resolved_file)  # Resolve token tags
-verify_token_tag_consistency(resolved_file)  # Verify consistency after resolution
+#resolve_token_tags(input_file, resolved_file)  # Resolve token tags
+#verify_token_tag_consistency(resolved_file)  # Verify consistency after resolution
 
 # Apply further NER rules corrections
-#print("Modification :", ensure_b_precedes_i(input_file, ensure_b_file))
-print("Modification :", ensure_b_precedes_i(resolved_file, ensure_b_file))
+print("Modification :", ensure_b_precedes_i(input_file, ensure_b_file))
+#print("Modification :", ensure_b_precedes_i(resolved_file, ensure_b_file))
 print("Modification :", process_ner_tags(ensure_b_file, final_output_file))
 
 print("NER tag post-processing completed and merged.")

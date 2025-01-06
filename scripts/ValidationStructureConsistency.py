@@ -114,8 +114,8 @@ def check_global_consistency(predictions):
 def main():
     # Define the output path for predictions.
     # Modify to check before and after post processing.
-    input_path = "predictions_output/predictions_output_1.jsonlines"
-    #input_path = "corrected_predictions_output/corrected_predictions_output_1.jsonlines"
+    #input_path = "predictions_output/predictions_output_1.jsonlines"
+    input_path = "corrected_predictions_output/corrected_predictions_output_1.jsonlines"
     predictions = load_dataset(input_path)
 
     # Check for global inconsistencies across all predictions

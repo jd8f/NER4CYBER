@@ -121,8 +121,11 @@ class NERDatasetPredict(Dataset):
         modified_tokens = []
         for i, token in enumerate(tokens):
             if any(ord(c) > 127 for c in token):  # If non-ASCII
+                # Replace with the Unicode escape sequence of the token
+                unicode_token = token.encode('unicode_escape').decode('utf-8')  # This will give '\u2022' without quotes
                 unk_token = f"[UNK-{idx}-{i}]"  # Unique id for replacement
-                self.unicode_replacements[unk_token] = token  # Save original
+                self.unicode_replacements[unk_token] = unicode_token  # Save original
+                print(self.unicode_replacements)  # Inspect all the unicode tokens
                 modified_tokens.append(unk_token)
             else:
                 modified_tokens.append(token)

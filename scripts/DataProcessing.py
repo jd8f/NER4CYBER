@@ -136,10 +136,17 @@ def calculate_class_weights(tag_distribution):
         dict: Dictionary of class weights for each tag.
     """
     total = sum(tag_distribution.values())
-    class_weights = {tag: total / (len(tag_distribution) * count) for tag, count in tag_distribution.items()}
-    
+    class_weights = {tag: (total / (len(tag_distribution) * count)) for tag, count in tag_distribution.items()}
+    #class_weights = {tag: (total / count) for tag, count in tag_distribution.items()}
+
+    class_weights['O'] = 0.1
+    class_weights['I-Action'] = 0.75
+    class_weights['I-Entity'] = 0.25
+    class_weights['B-Action'] = 0.5
+    class_weights['B-Modifier'] = 1.25
+    class_weights['B-Entity'] = 0.5
     # Optional: Cap weights to avoid excessively large values
-    max_weight_limit = 50  # or 80 depending on preference
+    max_weight_limit = 6  # or 80 depending on preference
     class_weights = {tag: min(weight, max_weight_limit) for tag, weight in class_weights.items()}
 
     return class_weights
@@ -204,14 +211,8 @@ if __name__ == "__main__":
     # Display the class weights
     print("Class Weights for Training Data\n--------------------------------")
     for tag, weight in train_class_weights.items():
-        if weight > 50:
-            print(f"Tag: {tag}\t| Overweight: {weight:.4f}")
-        else:
-            print(f"Tag: {tag}\t| Weight: {weight:.4f}")
+        print(f"Tag: {tag}\t| Weight: {weight:.4f}")
 
     """print("\nClass Weights for Validation Data:")
     for tag, weight in val_class_weights.items():
-        if weight > 50:       
-            print(f"Tag: {tag}\t| Overweight: {weight:.4f}")
-        else:
-            print(f"Tag: {tag}\t| Weight: {weight:.4f}")"""
+        print(f"Tag: {tag}\t| Weight: {weight:.4f}")"""
